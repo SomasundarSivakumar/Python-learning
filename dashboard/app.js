@@ -177,7 +177,140 @@ const lessons = [
 
 // ── State Management ──
 let currentLesson = null;
+let currentExercise = null;
+let activeTab = 'lessons';
 const STORAGE_KEY = 'learnPythonProgress';
+const EX_STORAGE_KEY = 'learnPythonExerciseProgress';
+
+// ── Exercises Data ──
+const exercises = [
+    {
+        id: 1, title: "Hello World", lessonId: 1, difficulty: "⭐ Beginner",
+        desc: "Practice printing output, patterns, and special characters.",
+        tasks: [
+            { title: "Print your name", instructions: ["Print \"My name is [your name]\""], starterCode: "# YOUR CODE HERE:" },
+            { title: "Print a pattern", instructions: ["Print this star pattern using print():", "  *", "  **", "  ***", "  ****", "  *****"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Use sep and end", instructions: ["Print \"2026/04/08\" using print() with <code>sep=\"/\"</code>"], starterCode: "# Hint: print(\"2026\", \"04\", \"08\", sep=\"/\")" },
+            { title: "Create ASCII art", instructions: ["Use multi-line strings to print a simple house:", "  <code>  /\\</code>", "  <code> /  \\</code>", "  <code>/    \\</code>", "  <code>|------|</code>", "  <code>|      |</code>", "  <code>|------|</code>"], starterCode: "# Hint: Use triple-quoted strings \"\"\"...\"\"\"" }
+        ]
+    },
+    {
+        id: 2, title: "Variables & Types", lessonId: 2, difficulty: "⭐ Beginner",
+        desc: "Practice creating variables, swapping values, and type checking.",
+        tasks: [
+            { title: "Create variables", instructions: ["Create these variables and print them:", "  • <code>your_name</code> (string)", "  • <code>your_age</code> (integer)", "  • <code>your_height</code> (float, in meters)", "  • <code>is_student</code> (boolean)"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Swap variables", instructions: ["Swap the values of x and y WITHOUT using a temp variable", "After swap: <code>x=20, y=10</code>"], starterCode: "x = 10\ny = 20\n# YOUR CODE HERE:\n# print(f\"x={x}, y={y}\")" },
+            { title: "Type detective", instructions: ["For each value below, predict its type, then verify with <code>type()</code>"], starterCode: "values = [42, \"42\", 42.0, True, None, [1, 2], (1, 2)]\n# YOUR CODE HERE:" },
+            { title: "Temperature converter", instructions: ["Create a variable <code>celsius = 37</code>", "Convert to Fahrenheit: <code>F = (C × 9/5) + 32</code>", "Print: \"37°C = 98.6°F\""], starterCode: "# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 3, title: "Strings & Formatting", lessonId: 3, difficulty: "⭐ Beginner",
+        desc: "Practice string slicing, validation, and f-string formatting.",
+        tasks: [
+            { title: "String slicing", instructions: ["Given: <code>word = \"PROGRAMMING\"</code>", "Extract and print: \"GRAM\" using slicing"], starterCode: "word = \"PROGRAMMING\"\n# YOUR CODE HERE:" },
+            { title: "Email validator", instructions: ["Check if an email contains \"@\" and \".\"", "Print \"Valid\" or \"Invalid\""], starterCode: "email = \"user@example.com\"\n# YOUR CODE HERE:" },
+            { title: "f-string formatting", instructions: ["Create variables: <code>item=\"Laptop\"</code>, <code>price=999.99</code>, <code>qty=3</code>", "Print: \"3x Laptop = $2,999.97\""], starterCode: "# YOUR CODE HERE:" },
+            { title: "Word reverser", instructions: ["Reverse the sentence word by word:", "\"Python is fun\" → \"fun is Python\""], starterCode: "sentence = \"Python is fun\"\n# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 4, title: "Numbers & Math", lessonId: 4, difficulty: "⭐ Beginner",
+        desc: "Practice circle calculations, modulo operations, and tip calculations.",
+        tasks: [
+            { title: "Circle calculator", instructions: ["Given <code>radius = 7</code>, calculate and print:", "  • Area (π × r²)", "  • Circumference (2 × π × r)"], starterCode: "import math\nradius = 7\n# YOUR CODE HERE:" },
+            { title: "Even or Odd checker", instructions: ["Use the modulo operator (%) to check if each number is even or odd"], starterCode: "numbers = [15, 22, 37, 44, 51]\n# YOUR CODE HERE (use a loop):" },
+            { title: "Tip calculator", instructions: ["Calculate the tip and total", "Print formatted: \"Bill: $85.50 | Tip: $15.39 | Total: $100.89\""], starterCode: "bill = 85.50\ntip_percent = 18\n# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 5, title: "User Input", lessonId: 5, difficulty: "⭐⭐ Elementary",
+        desc: "Build interactive programs that respond to user input.",
+        tasks: [
+            { title: "Greeting generator", instructions: ["Ask the user for their name and favorite color", "Print: \"Hi [name]! [color] is a great color!\""], starterCode: "# YOUR CODE HERE:" },
+            { title: "Age in days", instructions: ["Ask the user's age, convert to days (approx: age × 365)", "Print: \"You have lived approximately X days!\""], starterCode: "# YOUR CODE HERE:" },
+            { title: "Simple quiz", instructions: ["Ask 3 Python questions, check answers, show score", "Q1: \"What function prints output?\" → print", "Q2: \"What type is 3.14?\" → float", "Q3: \"True or False: Python uses indentation?\" → True"], starterCode: "# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 6, title: "Conditionals", lessonId: 6, difficulty: "⭐⭐ Elementary",
+        desc: "Practice if/elif/else, logical operators, and game logic.",
+        tasks: [
+            { title: "Number classifier", instructions: ["Given a number, print whether it's:", "positive, negative, or zero"], starterCode: "number = -7\n# YOUR CODE HERE:" },
+            { title: "Leap year checker", instructions: ["A year is a leap year if:", "  • divisible by 4 AND", "  • NOT divisible by 100, UNLESS also divisible by 400"], starterCode: "year = 2024\n# YOUR CODE HERE:" },
+            { title: "Rock Paper Scissors", instructions: ["Determine who wins and print the result"], starterCode: "player1 = \"rock\"\nplayer2 = \"scissors\"\n# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 7, title: "Loops", lessonId: 7, difficulty: "⭐⭐ Elementary",
+        desc: "Practice loops with sums, Fibonacci, patterns, and primes.",
+        tasks: [
+            { title: "Sum of 1 to 100", instructions: ["Use a loop to calculate 1 + 2 + 3 + ... + 100"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Fibonacci sequence", instructions: ["Print the first 15 Fibonacci numbers: 0, 1, 1, 2, 3, 5, 8, ..."], starterCode: "# YOUR CODE HERE:" },
+            { title: "Diamond pattern", instructions: ["Print a diamond with height 5:", "  <code>    *</code>", "  <code>   ***</code>", "  <code>  *****</code>", "  <code>   ***</code>", "  <code>    *</code>"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Prime numbers", instructions: ["Print all prime numbers from 2 to 50"], starterCode: "# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 8, title: "Lists & Tuples", lessonId: 8, difficulty: "⭐⭐ Elementary",
+        desc: "Practice list manipulation, comprehensions, and matrix operations.",
+        tasks: [
+            { title: "List manipulation", instructions: ["Start with: <code>nums = [5, 3, 8, 1, 9, 2, 7]</code>", "1) Sort ascending  2) Remove smallest  3) Add 10  4) Print"], starterCode: "nums = [5, 3, 8, 1, 9, 2, 7]\n# YOUR CODE HERE:" },
+            { title: "List comprehension", instructions: ["Create a list of squares of even numbers from 1 to 20", "Expected: [4, 16, 36, 64, 100, 144, 196, 256, 324, 400]"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Matrix sum", instructions: ["Calculate the sum of all elements in the 2D list"], starterCode: "matrix = [\n    [1, 2, 3],\n    [4, 5, 6],\n    [7, 8, 9]\n]\n# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 9, title: "Dicts & Sets", lessonId: 9, difficulty: "⭐⭐ Elementary",
+        desc: "Practice dictionaries, character counting, and set operations.",
+        tasks: [
+            { title: "Student database", instructions: ["Create a dict of 3 students with name, age, and grade", "Print each student's info in a formatted way"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Character counter", instructions: ["Count occurrence of each character in \"abracadabra\""], starterCode: "text = \"abracadabra\"\n# YOUR CODE HERE:" },
+            { title: "Set operations", instructions: ["Find students in both math AND science class"], starterCode: "math_students = {\"Alice\", \"Bob\", \"Charlie\", \"Diana\"}\nscience_students = {\"Bob\", \"Diana\", \"Eve\", \"Frank\"}\n# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 10, title: "Functions", lessonId: 10, difficulty: "⭐⭐⭐ Intermediate",
+        desc: "Practice writing reusable functions with parameters and returns.",
+        tasks: [
+            { title: "Greeting function", instructions: ["Create <code>greet(name, time=\"morning\")</code>", "Returns \"Good morning, name!\""], starterCode: "# YOUR CODE HERE:" },
+            { title: "Password strength checker", instructions: ["Create <code>check_password(pwd)</code> that returns:", "\"Weak\" (<6 chars), \"Medium\" (6-10), \"Strong\" (>10 with numbers)"], starterCode: "# YOUR CODE HERE:" },
+            { title: "List statistics", instructions: ["Create <code>stats(numbers)</code> that returns a dict with min, max, avg, sum"], starterCode: "# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 11, title: "File Handling", lessonId: 11, difficulty: "⭐⭐⭐ Intermediate",
+        desc: "Practice reading, writing, and analyzing files.",
+        tasks: [
+            { title: "Write and read", instructions: ["Write your top 5 favorite movies to a file", "Then read and print them"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Word counter", instructions: ["Write a paragraph to a file", "Then count total words in it"], starterCode: "# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 12, title: "Error Handling", lessonId: 12, difficulty: "⭐⭐⭐ Intermediate",
+        desc: "Practice try/except blocks for graceful error handling.",
+        tasks: [
+            { title: "Safe division", instructions: ["Create <code>safe_div(a, b)</code> that handles:", "  • ZeroDivisionError", "  • TypeError"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Safe list access", instructions: ["Create <code>safe_get(lst, index)</code> that handles IndexError"], starterCode: "# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 13, title: "Modules", lessonId: 13, difficulty: "⭐⭐⭐ Intermediate",
+        desc: "Practice using Python's standard library modules.",
+        tasks: [
+            { title: "Random password generator", instructions: ["Use <code>random</code> and <code>string</code> modules", "Create a 16-char password with uppercase, lowercase, digits, and symbols"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Date calculator", instructions: ["Use <code>datetime</code> to find how many days until New Year 2027"], starterCode: "# YOUR CODE HERE:" }
+        ]
+    },
+    {
+        id: 14, title: "OOP", lessonId: 14, difficulty: "⭐⭐⭐⭐ Advanced",
+        desc: "Build classes with properties, methods, and real-world behavior.",
+        tasks: [
+            { title: "Create a Book class", instructions: ["Properties: title, author, pages, current_page", "Methods:", "  • <code>read(pages)</code> — advances current_page", "  • <code>progress()</code> — returns percentage read"], starterCode: "# YOUR CODE HERE:" },
+            { title: "Create a Playlist class", instructions: ["Methods:", "  • <code>add_song(title, artist)</code>", "  • <code>remove_song(title)</code>", "  • <code>show()</code>", "  • <code>shuffle()</code>"], starterCode: "# YOUR CODE HERE:" }
+        ]
+    }
+];
 
 function getProgress() {
     try {
@@ -187,8 +320,20 @@ function getProgress() {
     }
 }
 
+function getExerciseProgress() {
+    try {
+        return JSON.parse(localStorage.getItem(EX_STORAGE_KEY)) || {};
+    } catch {
+        return {};
+    }
+}
+
 function saveProgress(progress) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+}
+
+function saveExerciseProgress(progress) {
+    localStorage.setItem(EX_STORAGE_KEY, JSON.stringify(progress));
 }
 
 function getCompletedCount() {
@@ -201,9 +346,12 @@ document.addEventListener('DOMContentLoaded', () => {
     createParticles();
     addProgressGradient();
     renderNav();
+    renderExerciseNav();
     renderPath();
     updateProgress();
     setupEventListeners();
+    setupTabListeners();
+    setupExerciseListeners();
 });
 
 // ── Particles ──
@@ -245,6 +393,24 @@ function addProgressGradient() {
     svg.insertBefore(defs, svg.firstChild);
 }
 
+// ── Tab Switching ──
+function setupTabListeners() {
+    document.querySelectorAll('.sidebar-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.dataset.tab;
+            activeTab = tabName;
+
+            // Update active tab button
+            document.querySelectorAll('.sidebar-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            // Show/hide navs
+            document.getElementById('lessonNav').style.display = tabName === 'lessons' ? '' : 'none';
+            document.getElementById('exerciseNav').style.display = tabName === 'exercises' ? '' : 'none';
+        });
+    });
+}
+
 // ── Render Navigation ──
 function renderNav() {
     const nav = document.getElementById('lessonNav');
@@ -259,6 +425,26 @@ function renderNav() {
                 <div class="nav-info">
                     <div class="nav-title">${lesson.title}</div>
                     <div class="nav-difficulty">${lesson.difficulty}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// ── Render Exercise Navigation ──
+function renderExerciseNav() {
+    const nav = document.getElementById('exerciseNav');
+    const progress = getExerciseProgress();
+    nav.innerHTML = exercises.map(exercise => {
+        const completed = progress[exercise.id];
+        const active = currentExercise && currentExercise.id === exercise.id;
+        return `
+            <div class="nav-item exercise-item ${completed ? 'completed' : ''} ${active ? 'active' : ''}"
+                 data-id="${exercise.id}" onclick="openExercise(${exercise.id})">
+                <div class="nav-status">${completed ? '✓' : exercise.id}</div>
+                <div class="nav-info">
+                    <div class="nav-title">${exercise.title}</div>
+                    <div class="nav-difficulty">${exercise.difficulty}</div>
                 </div>
             </div>
         `;
@@ -299,15 +485,23 @@ function updateProgress() {
     if (detail) detail.textContent = `${completed} / ${total} lessons`;
 }
 
+// ── Hide all content views ──
+function hideAllViews() {
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('lessonViewer').style.display = 'none';
+    document.getElementById('exerciseViewer').style.display = 'none';
+}
+
 // ── Open Lesson ──
 function openLesson(id) {
     const lesson = lessons.find(l => l.id === id);
     if (!lesson) return;
 
     currentLesson = lesson;
+    currentExercise = null;
 
-    // Show viewer, hide welcome
-    document.getElementById('welcomeScreen').style.display = 'none';
+    // Show viewer, hide others
+    hideAllViews();
     document.getElementById('lessonViewer').style.display = 'block';
 
     // Header
@@ -353,6 +547,103 @@ function openLesson(id) {
 
     // Update nav
     renderNav();
+    renderExerciseNav();
+
+    // Scroll to top
+    document.getElementById('mainContent').scrollTop = 0;
+
+    // Close mobile sidebar
+    closeSidebar();
+}
+
+// ── Open Exercise ──
+function openExercise(id) {
+    const exercise = exercises.find(e => e.id === id);
+    if (!exercise) return;
+
+    currentExercise = exercise;
+    currentLesson = null;
+
+    // Show exercise viewer, hide others
+    hideAllViews();
+    document.getElementById('exerciseViewer').style.display = 'block';
+
+    // Header
+    document.getElementById('exerciseBadge').textContent = `Exercise ${exercise.id}`;
+    document.getElementById('exerciseTitle').textContent = exercise.title;
+    document.getElementById('exerciseDesc').textContent = exercise.desc;
+
+    // Related lesson link
+    const lessonLink = document.getElementById('exerciseLessonLink');
+    lessonLink.textContent = `📚 Lesson ${exercise.lessonId}: ${lessons.find(l => l.id === exercise.lessonId)?.title || ''}`;
+    lessonLink.onclick = () => {
+        // Switch to lessons tab and open lesson
+        document.getElementById('tabLessons').click();
+        openLesson(exercise.lessonId);
+    };
+
+    // Tasks
+    const savedCode = getSavedCode(exercise.id);
+    document.getElementById('exerciseTasks').innerHTML =
+        exercise.tasks.map((task, i) => {
+            const codeKey = `ex${exercise.id}_task${i}`;
+            const userCode = savedCode[codeKey] || task.starterCode;
+            return `
+            <div class="exercise-task" style="animation-delay: ${i * 0.1}s">
+                <div class="exercise-task-header">
+                    <div class="task-number">${i + 1}</div>
+                    <div class="task-title">${task.title}</div>
+                </div>
+                <div class="exercise-task-body">
+                    <div class="task-instructions">
+                        ${task.instructions.map(inst => `<p>${inst}</p>`).join('')}
+                    </div>
+                    <div class="code-editor-wrapper">
+                        <div class="code-editor-toolbar">
+                            <span class="editor-label">✏️ Your Code</span>
+                            <div class="editor-actions">
+                                <button class="editor-btn check-editor-btn" onclick="checkCode(${exercise.id}, ${i})" title="Check your code">▶ Check</button>
+                                <button class="editor-btn copy-editor-btn" onclick="copyEditorCode(${exercise.id}, ${i})" title="Copy code">📋 Copy</button>
+                                <button class="editor-btn reset-editor-btn" onclick="resetEditorCode(${exercise.id}, ${i})" title="Reset to starter code">↺ Reset</button>
+                            </div>
+                        </div>
+                        <textarea
+                            class="code-editor"
+                            id="editor_${exercise.id}_${i}"
+                            spellcheck="false"
+                            oninput="autoSaveCode(${exercise.id}, ${i}); autoGrow(this)"
+                            onkeydown="handleTab(event)"
+                        >${escapeHtml(userCode)}</textarea>
+                        <div class="check-result" id="result_${exercise.id}_${i}"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        }).join('');
+
+    // Auto-grow all editors
+    setTimeout(() => {
+        document.querySelectorAll('.code-editor').forEach(el => autoGrow(el));
+    }, 50);
+
+    // Complete button state
+    const progress = getExerciseProgress();
+    const btn = document.getElementById('exCompleteBtn');
+    if (progress[exercise.id]) {
+        btn.classList.add('completed');
+        btn.innerHTML = '<span class="check-icon">☑</span> Completed!';
+    } else {
+        btn.classList.remove('completed');
+        btn.innerHTML = '<span class="check-icon">☐</span> Mark Complete';
+    }
+
+    // Nav buttons
+    document.getElementById('exPrevBtn').disabled = id === 1;
+    document.getElementById('exNextBtn').disabled = id === exercises.length;
+
+    // Update navs
+    renderNav();
+    renderExerciseNav();
 
     // Scroll to top
     document.getElementById('mainContent').scrollTop = 0;
@@ -435,6 +726,320 @@ function copyCode(btn, sectionIndex) {
     });
 }
 
+// ── HTML Escape for textarea ──
+function escapeHtml(text) {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ── Code Editor: Save/Load ──
+const CODE_STORAGE_KEY = 'learnPythonCode';
+
+function getSavedCode(exerciseId) {
+    try {
+        const all = JSON.parse(localStorage.getItem(CODE_STORAGE_KEY)) || {};
+        return all[exerciseId] || {};
+    } catch {
+        return {};
+    }
+}
+
+function autoSaveCode(exerciseId, taskIndex) {
+    const editor = document.getElementById(`editor_${exerciseId}_${taskIndex}`);
+    if (!editor) return;
+
+    try {
+        const all = JSON.parse(localStorage.getItem(CODE_STORAGE_KEY)) || {};
+        if (!all[exerciseId]) all[exerciseId] = {};
+        all[exerciseId][`ex${exerciseId}_task${taskIndex}`] = editor.value;
+        localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(all));
+    } catch (e) {
+        console.warn('Could not save code:', e);
+    }
+
+    // Update save indicator
+    const wrapper = editor.closest('.code-editor-wrapper');
+    const label = wrapper?.querySelector('.editor-label');
+    if (label) {
+        label.textContent = '✅ Saved!';
+        setTimeout(() => { label.textContent = '✏️ Your Code'; }, 1500);
+    }
+}
+
+function copyEditorCode(exerciseId, taskIndex) {
+    const editor = document.getElementById(`editor_${exerciseId}_${taskIndex}`);
+    if (!editor) return;
+    navigator.clipboard.writeText(editor.value).then(() => {
+        const wrapper = editor.closest('.code-editor-wrapper');
+        const btn = wrapper?.querySelector('.copy-editor-btn');
+        if (btn) {
+            btn.textContent = '✅ Copied!';
+            setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+        }
+    });
+}
+
+function resetEditorCode(exerciseId, taskIndex) {
+    const exercise = exercises.find(e => e.id === exerciseId);
+    if (!exercise) return;
+    const task = exercise.tasks[taskIndex];
+    if (!task) return;
+
+    const editor = document.getElementById(`editor_${exerciseId}_${taskIndex}`);
+    if (!editor) return;
+
+    // Confirm reset
+    const wrapper = editor.closest('.code-editor-wrapper');
+    const btn = wrapper?.querySelector('.reset-editor-btn');
+    
+    if (btn && !btn.dataset.confirm) {
+        btn.dataset.confirm = 'true';
+        btn.textContent = '⚠️ Confirm?';
+        btn.style.color = '#ef4444';
+        setTimeout(() => {
+            delete btn.dataset.confirm;
+            btn.textContent = '↺ Reset';
+            btn.style.color = '';
+        }, 3000);
+        return;
+    }
+
+    // Actually reset
+    editor.value = task.starterCode;
+    autoGrow(editor);
+
+    // Clear from storage
+    try {
+        const all = JSON.parse(localStorage.getItem(CODE_STORAGE_KEY)) || {};
+        if (all[exerciseId]) {
+            delete all[exerciseId][`ex${exerciseId}_task${taskIndex}`];
+            localStorage.setItem(CODE_STORAGE_KEY, JSON.stringify(all));
+        }
+    } catch (e) {}
+
+    if (btn) {
+        delete btn.dataset.confirm;
+        btn.textContent = '✅ Reset!';
+        btn.style.color = '#10b981';
+        setTimeout(() => {
+            btn.textContent = '↺ Reset';
+            btn.style.color = '';
+        }, 2000);
+    }
+}
+
+// ── Tab Key Support in Editor ──
+function handleTab(e) {
+    if (e.key === 'Tab') {
+        e.preventDefault();
+        const editor = e.target;
+        const start = editor.selectionStart;
+        const end = editor.selectionEnd;
+        editor.value = editor.value.substring(0, start) + '    ' + editor.value.substring(end);
+        editor.selectionStart = editor.selectionEnd = start + 4;
+        autoSaveCode(
+            parseInt(editor.id.split('_')[1]),
+            parseInt(editor.id.split('_')[2])
+        );
+    }
+}
+
+// ── Auto-grow textarea ──
+function autoGrow(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.max(el.scrollHeight, 80) + 'px';
+}
+
+// ══════════════════════════════════════════
+// CODE VALIDATION SYSTEM
+// ══════════════════════════════════════════
+
+const taskValidations = {
+    // Exercise 1: Hello World
+    1: [
+        { checks: [{ p: 'print', m: 'Use the print() function' }, { p: /["'].*name.*["']/i, m: 'Include your name in a string' }], success: 'Great job printing your name! 🎉' },
+        { checks: [{ p: 'print', m: 'Use print() to show the pattern' }, { p: /\*{2,}/, m: 'Print increasing stars (**, ***, etc.)' }], success: 'Nice pattern! ⭐' },
+        { checks: [{ p: 'print', m: 'Use print()' }, { p: /sep\s*=/, m: 'Use the sep parameter: sep="/"' }], success: 'Perfect use of sep! 🎉' },
+        { checks: [{ p: 'print', m: 'Use print()' }, { p: /("""|'''|\\n|house|\/{2,}|\|)/, m: 'Create the house pattern using multi-line strings or multiple prints' }], success: 'Nice ASCII art! 🏠' }
+    ],
+    // Exercise 2: Variables & Types
+    2: [
+        { checks: [{ p: /=\s*["']/, m: 'Create a string variable (e.g., your_name = "...")' }, { p: /=\s*\d+/, m: 'Create a number variable (e.g., your_age = 25)' }, { p: /=\s*(True|False)/, m: 'Create a boolean variable (e.g., is_student = True)' }, { p: 'print', m: 'Print your variables' }], success: 'All variables created! 🎉' },
+        { checks: [{ p: /x\s*,\s*y\s*=\s*y\s*,\s*x/, m: 'Swap using: x, y = y, x' }], success: 'Clean swap without temp variable! 🔄' },
+        { checks: [{ p: 'type', m: 'Use type() to check each value' }], success: 'Type detective work done! 🔍' },
+        { checks: [{ p: /9\s*\/\s*5|1\.8/, m: 'Use the formula: F = (C × 9/5) + 32' }, { p: 'print', m: 'Print the result' }], success: 'Temperature converted! 🌡️' }
+    ],
+    // Exercise 3: Strings & Formatting
+    3: [
+        { checks: [{ p: /\[\d+:\d+\]/, m: 'Use string slicing: word[start:end]' }, { p: 'print', m: 'Print the result' }], success: 'Slicing master! 🔪' },
+        { checks: [{ p: /["']@["']|in\s|@/, m: 'Check for "@" in the email' }, { p: /["']\.["']|\./, m: 'Check for "." in the email' }], success: 'Email validated! 📧' },
+        { checks: [{ p: /f["']|format|%/, m: 'Use f-strings or .format()' }, { p: 'print', m: 'Print the formatted result' }], success: 'Formatted perfectly! 💰' },
+        { checks: [{ p: /split|\[::\s*-1\]|reverse/, m: 'Use split() and/or reverse' }], success: 'Words reversed! 🔁' }
+    ],
+    // Exercise 4: Numbers & Math
+    4: [
+        { checks: [{ p: /math\.pi|3\.14/, m: 'Use math.pi for π' }, { p: /\*\*\s*2|pow|\*\s*r/, m: 'Calculate area using r²' }, { p: 'print', m: 'Print the results' }], success: 'Circle calculations done! ⭕' },
+        { checks: [{ p: /%\s*2|%2/, m: 'Use modulo (%) to check even/odd' }, { p: /for|while/, m: 'Use a loop to check each number' }], success: 'Even/odd checked! 🔢' },
+        { checks: [{ p: /\*\s*\d+|\*\s*tip|tip_percent/, m: 'Calculate the tip amount' }, { p: 'print', m: 'Print the formatted result' }], success: 'Tip calculated! 💵' }
+    ],
+    // Exercise 5: User Input
+    5: [
+        { checks: [{ p: 'input', m: 'Use input() to ask the user' }, { p: 'print', m: 'Print the greeting' }], success: 'Greeting generated! 👋' },
+        { checks: [{ p: 'input', m: 'Use input() to get age' }, { p: /int\(|\*\s*365|365/, m: 'Convert to int and multiply by 365' }], success: 'Age in days calculated! 📅' },
+        { checks: [{ p: 'input', m: 'Use input() for quiz questions' }, { p: /==|lower|score|count/, m: 'Check answers and track score' }], success: 'Quiz created! 🧠' }
+    ],
+    // Exercise 6: Conditionals
+    6: [
+        { checks: [{ p: /if.*>|if.*<|if.*==/, m: 'Use if/elif/else to check positive/negative/zero' }, { p: 'print', m: 'Print the result' }], success: 'Number classified! ✅' },
+        { checks: [{ p: /%\s*4|%4/, m: 'Check divisibility by 4' }, { p: /%\s*100|%100/, m: 'Check divisibility by 100' }], success: 'Leap year logic correct! 📆' },
+        { checks: [{ p: /if|elif/, m: 'Use conditionals to determine winner' }, { p: 'print', m: 'Print who wins' }], success: 'Game logic works! 🎮' }
+    ],
+    // Exercise 7: Loops
+    7: [
+        { checks: [{ p: /for|while/, m: 'Use a for or while loop' }, { p: /\+|sum|\+=/, m: 'Add numbers together' }], success: 'Sum = 5050! 🧮' },
+        { checks: [{ p: /for|while/, m: 'Use a loop' }, { p: /a\s*\+\s*b|fib|a,\s*b\s*=\s*b|prev/, m: 'Generate Fibonacci by adding previous two numbers' }], success: 'Fibonacci sequence done! 🌀' },
+        { checks: [{ p: /for|while/, m: 'Use loops' }, { p: /\*|star/, m: 'Print stars to form the diamond' }], success: 'Diamond pattern looks great! 💎' },
+        { checks: [{ p: /for|while/, m: 'Use loops' }, { p: /%|prime|divisible/, m: 'Check for prime numbers using modulo' }], success: 'Primes found! 🔢' }
+    ],
+    // Exercise 8: Lists & Tuples
+    8: [
+        { checks: [{ p: /sort\(|sorted/, m: 'Sort the list' }, { p: /remove|pop/, m: 'Remove the smallest element' }, { p: /append|\+.*10/, m: 'Add 10 to the list' }], success: 'List manipulated! 📋' },
+        { checks: [{ p: /\[.*for.*in.*if|\[.*for.*in/, m: 'Use a list comprehension [expr for x in ...]' }, { p: /\*\*\s*2|\*\s*x|pow/, m: 'Calculate squares' }], success: 'Comprehension master! ⚡' },
+        { checks: [{ p: /for|sum/, m: 'Loop through or use sum()' }, { p: /matrix|row/, m: 'Access matrix rows' }], success: 'Matrix sum = 45! 🔢' }
+    ],
+    // Exercise 9: Dicts & Sets
+    9: [
+        { checks: [{ p: /\{.*:/, m: 'Create a dictionary with {key: value}' }, { p: 'print', m: 'Print student info' }], success: 'Student database created! 🎓' },
+        { checks: [{ p: /for|Counter|count/, m: 'Count each character' }, { p: /text|abracadabra/, m: 'Use the text variable' }], success: 'Characters counted! 🔤' },
+        { checks: [{ p: /&|intersection|and/, m: 'Find intersection of both sets' }], success: 'Set operations done! 🔗' }
+    ],
+    // Exercise 10: Functions
+    10: [
+        { checks: [{ p: /def\s+greet/, m: 'Define a function: def greet(name, time=...)' }, { p: 'return', m: 'Return the greeting string' }], success: 'Greeting function works! 👋' },
+        { checks: [{ p: /def\s+check_password/, m: 'Define: def check_password(pwd)' }, { p: /len\(|<\s*6|>\s*10/, m: 'Check password length' }, { p: 'return', m: 'Return strength level' }], success: 'Password checker done! 🔒' },
+        { checks: [{ p: /def\s+stats/, m: 'Define: def stats(numbers)' }, { p: /min|max/, m: 'Calculate min and max' }, { p: 'return', m: 'Return a dict with stats' }], success: 'Statistics function complete! 📊' }
+    ],
+    // Exercise 11: File Handling
+    11: [
+        { checks: [{ p: /open\(/, m: 'Use open() to work with files' }, { p: /["']w["']/, m: 'Write mode: open(file, "w")' }, { p: /["']r["']|read/, m: 'Read the file back' }], success: 'File read & write done! 📄' },
+        { checks: [{ p: /open\(/, m: 'Use open() for file operations' }, { p: /split|count|len/, m: 'Count words using split() or len()' }], success: 'Word counter works! 📝' }
+    ],
+    // Exercise 12: Error Handling
+    12: [
+        { checks: [{ p: /def\s+safe_div/, m: 'Define: def safe_div(a, b)' }, { p: 'try', m: 'Use try/except block' }, { p: /ZeroDivision|except/, m: 'Handle ZeroDivisionError' }], success: 'Safe division implemented! 🛡️' },
+        { checks: [{ p: /def\s+safe_get/, m: 'Define: def safe_get(lst, index)' }, { p: 'try', m: 'Use try/except block' }, { p: /IndexError|except/, m: 'Handle IndexError' }], success: 'Safe list access done! 🛡️' }
+    ],
+    // Exercise 13: Modules
+    13: [
+        { checks: [{ p: /import\s+random|from\s+random/, m: 'Import the random module' }, { p: /import\s+string|from\s+string/, m: 'Import the string module' }, { p: /choice|choices|join/, m: 'Generate random characters' }], success: 'Password generator works! 🔐' },
+        { checks: [{ p: /import\s+datetime|from\s+datetime/, m: 'Import datetime module' }, { p: /2027/, m: 'Reference year 2027' }], success: 'Days until New Year calculated! 🎆' }
+    ],
+    // Exercise 14: OOP
+    14: [
+        { checks: [{ p: /class\s+Book/, m: 'Define: class Book' }, { p: /def\s+__init__/, m: 'Add __init__ method' }, { p: /def\s+read/, m: 'Add read() method' }, { p: /def\s+progress/, m: 'Add progress() method' }], success: 'Book class complete! 📖' },
+        { checks: [{ p: /class\s+Playlist/, m: 'Define: class Playlist' }, { p: /def\s+add_song/, m: 'Add add_song() method' }, { p: /def\s+show/, m: 'Add show() method' }], success: 'Playlist class rocks! 🎵' }
+    ]
+};
+
+function checkCode(exerciseId, taskIndex) {
+    const editor = document.getElementById(`editor_${exerciseId}_${taskIndex}`);
+    const resultDiv = document.getElementById(`result_${exerciseId}_${taskIndex}`);
+    if (!editor || !resultDiv) return;
+
+    const code = editor.value.trim();
+    const validation = taskValidations[exerciseId]?.[taskIndex];
+    if (!validation) return;
+
+    // Check if code is still the starter code
+    const exercise = exercises.find(e => e.id === exerciseId);
+    if (exercise && code === exercise.tasks[taskIndex].starterCode.trim()) {
+        resultDiv.innerHTML = `<div class="check-feedback check-warning">⚠️ Write your code first, then check!</div>`;
+        resultDiv.style.display = 'block';
+        return;
+    }
+
+    // Check if empty or only comments
+    const codeLines = code.split('\n').filter(l => l.trim() && !l.trim().startsWith('#'));
+    if (codeLines.length === 0) {
+        resultDiv.innerHTML = `<div class="check-feedback check-warning">⚠️ Your code is empty. Write some code first!</div>`;
+        resultDiv.style.display = 'block';
+        return;
+    }
+
+    // Run all checks
+    const failures = [];
+    for (const check of validation.checks) {
+        const pattern = check.p;
+        let passed = false;
+        if (typeof pattern === 'string') {
+            passed = code.includes(pattern);
+        } else if (pattern instanceof RegExp) {
+            passed = pattern.test(code);
+        }
+        if (!passed) {
+            failures.push(check.m);
+        }
+    }
+
+    if (failures.length === 0) {
+        // All checks passed!
+        resultDiv.innerHTML = `
+            <div class="check-feedback check-pass">
+                <span class="check-icon-large">✅</span>
+                <div>
+                    <strong>Correct!</strong> ${validation.success}
+                </div>
+            </div>`;
+    } else {
+        // Some checks failed
+        resultDiv.innerHTML = `
+            <div class="check-feedback check-fail">
+                <span class="check-icon-large">❌</span>
+                <div>
+                    <strong>Not quite right.</strong> Here's what to fix:
+                    <ul class="check-hints">
+                        ${failures.map(f => `<li>→ ${f}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>`;
+    }
+    resultDiv.style.display = 'block';
+}
+
+// ── Exercise Event Listeners ──
+function setupExerciseListeners() {
+    // Exercise Complete button
+    document.getElementById('exCompleteBtn')?.addEventListener('click', () => {
+        if (!currentExercise) return;
+        const progress = getExerciseProgress();
+        progress[currentExercise.id] = !progress[currentExercise.id];
+        saveExerciseProgress(progress);
+        renderExerciseNav();
+
+        const btn = document.getElementById('exCompleteBtn');
+        if (progress[currentExercise.id]) {
+            btn.classList.add('completed');
+            btn.innerHTML = '<span class="check-icon">☑</span> Completed!';
+            celebrate(); // 🎉 Celebrate milestone!
+        } else {
+            btn.classList.remove('completed');
+            btn.innerHTML = '<span class="check-icon">☐</span> Mark Complete';
+        }
+    });
+
+    // Exercise Nav buttons
+    document.getElementById('exPrevBtn')?.addEventListener('click', () => {
+        if (currentExercise && currentExercise.id > 1) {
+            openExercise(currentExercise.id - 1);
+        }
+    });
+
+    document.getElementById('exNextBtn')?.addEventListener('click', () => {
+        if (currentExercise && currentExercise.id < exercises.length) {
+            openExercise(currentExercise.id + 1);
+        }
+    });
+}
+
 // ── Event Listeners ──
 function setupEventListeners() {
     // Start button
@@ -455,6 +1060,7 @@ function setupEventListeners() {
         if (progress[currentLesson.id]) {
             btn.classList.add('completed');
             btn.innerHTML = '<span class="check-icon">☑</span> Completed!';
+            celebrate(); // 🎉 Celebrate milestone!
         } else {
             btn.classList.remove('completed');
             btn.innerHTML = '<span class="check-icon">☐</span> Mark Complete';
@@ -494,8 +1100,11 @@ function setupEventListeners() {
             clearTimeout(resetTimer);
             resetPending = false;
             localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(EX_STORAGE_KEY);
+            localStorage.removeItem(CODE_STORAGE_KEY);
             updateProgress();
             renderNav();
+            renderExerciseNav();
             resetBtn.innerHTML = '<span>✅</span> Progress Reset!';
             resetBtn.style.background = 'rgba(16, 185, 129, 0.2)';
             resetBtn.style.borderColor = 'rgba(16, 185, 129, 0.3)';
@@ -507,9 +1116,10 @@ function setupEventListeners() {
                 resetBtn.style.color = '';
             }, 2000);
             // Go back to welcome screen
+            hideAllViews();
             document.getElementById('welcomeScreen').style.display = 'block';
-            document.getElementById('lessonViewer').style.display = 'none';
             currentLesson = null;
+            currentExercise = null;
         }
     });
 
@@ -518,11 +1128,13 @@ function setupEventListeners() {
 
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft' && currentLesson?.id > 1) {
-            openLesson(currentLesson.id - 1);
+        if (currentLesson) {
+            if (e.key === 'ArrowLeft' && currentLesson.id > 1) openLesson(currentLesson.id - 1);
+            if (e.key === 'ArrowRight' && currentLesson.id < lessons.length) openLesson(currentLesson.id + 1);
         }
-        if (e.key === 'ArrowRight' && currentLesson?.id < lessons.length) {
-            openLesson(currentLesson.id + 1);
+        if (currentExercise) {
+            if (e.key === 'ArrowLeft' && currentExercise.id > 1) openExercise(currentExercise.id - 1);
+            if (e.key === 'ArrowRight' && currentExercise.id < exercises.length) openExercise(currentExercise.id + 1);
         }
     });
 }
@@ -552,3 +1164,60 @@ function closeSidebar() {
     document.getElementById('sidebar')?.classList.remove('open');
     document.querySelector('.sidebar-overlay')?.classList.remove('show');
 }
+
+// ── Celebration Animation ──
+function celebrate() {
+    // 1. Confetti Burst
+    const duration = 3 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+    function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+            return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+        confetti(Object.assign({}, defaults, { 
+            particleCount, 
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } 
+        }));
+        confetti(Object.assign({}, defaults, { 
+            particleCount, 
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } 
+        }));
+    }, 250);
+
+    // 2. Balloons
+    const container = document.createElement('div');
+    container.className = 'balloon-container';
+    document.body.appendChild(container);
+
+    const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+    
+    for (let i = 0; i < 20; i++) {
+        setTimeout(() => {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.style.left = Math.random() * 100 + '%';
+            balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            balloon.style.animationDelay = Math.random() * 2 + 's';
+            container.appendChild(balloon);
+            
+            // Remove balloon element after animation completes
+            setTimeout(() => balloon.remove(), 7000);
+        }, i * 200);
+    }
+    
+    // Remove container from DOM once all balloons are gone
+    setTimeout(() => {
+        container.remove();
+    }, 12000);
+}
+
