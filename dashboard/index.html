@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Python — by Somasundar</title>
+    <meta name="description" content="An interactive Python learning dashboard with 15 structured lessons, progress tracking, and exercises.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Animated background particles -->
+        <div class="bg-particles" id="particles"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🐍</span>
+                    <div>
+                        <h1>Learn Python</h1>
+                        <p class="subtitle">by Somasundar</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="progress-card">
+                <div class="progress-ring-container">
+                    <svg class="progress-ring" width="80" height="80">
+                        <circle class="progress-ring-bg" cx="40" cy="40" r="34"/>
+                        <circle class="progress-ring-fill" id="progressRing" cx="40" cy="40" r="34"/>
+                    </svg>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+                <div class="progress-info">
+                    <span class="progress-label">Course Progress</span>
+                    <span class="progress-detail" id="progressDetail">0 / 15 lessons</span>
+                </div>
+            </div>
+
+            <nav class="lesson-nav" id="lessonNav">
+                <!-- Lessons will be populated by JS -->
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="reset-btn" id="resetBtn" title="Reset Progress">
+                    <span>↺</span> Reset Progress
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <!-- Mobile header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menuToggle">☰</button>
+                <span class="mobile-title">🐍 Learn Python</span>
+            </div>
+
+            <!-- Welcome screen (shown by default) -->
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-hero">
+                    <div class="welcome-icon-large">🐍</div>
+                    <h2>Welcome to Learn Python!</h2>
+                    <p>Master Python programming through 15 hands-on lessons.<br>
+                       From "Hello World" to building real applications.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-icon">📚</span>
+                        <span class="stat-number">15</span>
+                        <span class="stat-label">Lessons</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🏋️</span>
+                        <span class="stat-number">14</span>
+                        <span class="stat-label">Exercises</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">🚀</span>
+                        <span class="stat-number">1</span>
+                        <span class="stat-label">Final Project</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-icon">⭐</span>
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">Difficulty Levels</span>
+                    </div>
+                </div>
+
+                <div class="path-section">
+                    <h3>🗺️ Your Learning Path</h3>
+                    <div class="path-items" id="pathItems">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <button class="start-btn" id="startBtn">
+                    Start Learning →
+                </button>
+            </div>
+
+            <!-- Lesson viewer (hidden by default) -->
+            <div class="lesson-viewer" id="lessonViewer" style="display: none;">
+                <div class="lesson-header">
+                    <div class="lesson-meta">
+                        <span class="lesson-badge" id="lessonBadge">Lesson 1</span>
+                        <span class="lesson-difficulty" id="lessonDifficulty">⭐ Beginner</span>
+                    </div>
+                    <h2 class="lesson-title" id="lessonTitle">Hello World</h2>
+                    <p class="lesson-desc" id="lessonDesc">Learn the basics of Python</p>
+                </div>
+
+                <div class="lesson-body">
+                    <!-- Key Concepts -->
+                    <div class="concepts-card" id="conceptsCard">
+                        <h3>🎯 What You'll Learn</h3>
+                        <ul id="conceptsList"></ul>
+                    </div>
+
+                    <!-- Code sections -->
+                    <div class="code-sections" id="codeSections">
+                        <!-- Generated by JS -->
+                    </div>
+
+                    <!-- Summary -->
+                    <div class="summary-card" id="summaryCard">
+                        <h3>📝 Summary</h3>
+                        <ul id="summaryList"></ul>
+                    </div>
+                </div>
+
+                <div class="lesson-actions">
+                    <button class="nav-btn prev-btn" id="prevBtn">← Previous</button>
+                    <button class="complete-btn" id="completeBtn">
+                        <span class="check-icon">☐</span> Mark Complete
+                    </button>
+                    <button class="nav-btn next-btn" id="nextBtn">Next →</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
